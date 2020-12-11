@@ -118,7 +118,6 @@ solitaire = {
         if (!card.revealed) {
             return;
         }
-        //check if card is selected , no 
         if (Object.keys(this.selectedCard.card).length === 0) {
             this.selectCard(card);
         } else {
@@ -126,30 +125,34 @@ solitaire = {
         }
     },
 
-    onEmptyPlaceholderClick() {
-
-    },
-
     //open placeholder drop execution
     dropCardOnOpenPlaceholder(card) {
         if (this.isCardLower(card, this.selectedCard.card) && this.isColorOpposite(card, this.selectedCard.card)) {
             let dropPlaceholderIndex = card.placeholderIndex;
             let dropPlaceholder = this.openPlaceholders[dropPlaceholderIndex];
-            let movingStack = card;
+            let movingStack = [card];
 
-            if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined) {
-                let selectCardPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
-                let selectedCardIndex = this.selectedCard.cardIndex;
+            if (dropPlaceholder.length === 0 && this.isCardKing(card)) {
+                return;
+            }
+
+            let selectCardPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
+            let selectedCardIndex = this.selectedCard.cardIndex;
+            if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined ||
+                selectCardPlaceholder.length - 1 === selectedCardIndex) {
                 movingStack = selectCardPlaceholder.splice(selectedCardIndex, (selectCardPlaceholder.length - selectedCardIndex));
+                console.log('operation in')
             }
 
             dropPlaceholder.splice(dropPlaceholder.length, 0, ...movingStack);
 
         }
     },
+
     checkCardMatchSuit() {
 
     },
+
     //hide and show card faces
     revealcard: function (card) {
         card.revealed = true;
