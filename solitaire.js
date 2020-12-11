@@ -145,7 +145,7 @@ solitaire = {
                 console.log(movingStack, 'updated');
             } else {
                 //coming from the deck 
-                
+                this.closedCardDeck = this.closedCardDeck.slice(this.closedCardDeck.length - 1);
             }
 
             dropPlaceholder.splice(dropPlaceholder.length, 0, ...movingStack);
