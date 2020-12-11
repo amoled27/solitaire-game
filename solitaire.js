@@ -139,7 +139,7 @@ solitaire = {
             let selectCardPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
             let selectedCardIndex = this.selectedCard.cardIndex;
             if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined ||
-                selectCardPlaceholder.length - 1 === selectedCardIndex) {
+                selectCardPlaceholder.length - 1 !== selectedCardIndex) {
                 movingStack = selectCardPlaceholder.splice(selectedCardIndex, (selectCardPlaceholder.length - selectedCardIndex));
                 console.log('operation in')
             }
@@ -201,5 +201,15 @@ solitaire = {
         this.closedCardDeck[0] = lastCard;
         return this.closedCardDeck[this.closedCardDeck.length - 1];
     },
+    resetGame: function() {
+        this.selectedCard = {
+            card: {},
+            cardIndex: null
+        };
+        openPlaceholders = [];
+        suitPlaceholders= [];
+        cardDeck= [];
+        closedCardDeck= [];
+    }
 
 }
