@@ -13,6 +13,7 @@ solitaire = {
         }
 
     },
+    selectedCard: {},
     openPlaceholders: [],
     suitPlaceholders: [], //{type: , stack: }
     cardDeck: [],
@@ -22,7 +23,8 @@ solitaire = {
     },
     gameInitialization: function () {
         this.initializeCardDeck();
-        this.initializeClosedDeck()
+        this.initializeClosedDeck();
+        this.getNewCardFromClosedDeck();
     },
     //initialize 52 cards with their data and save in an array
     initializeCardDeck: function () {
@@ -58,7 +60,6 @@ solitaire = {
         let usedCardsCount = this.config.openPlaceholdersLimit * (this.config.openPlaceholdersLimit + 1) / 2;
         this.closedCardDeck = [...this.cardDeck];
         this.closedCardDeck.splice(0, usedCardsCount);
-        console.log(this.closedCardDeck);
     },
 
     //card data structure
@@ -102,11 +103,11 @@ solitaire = {
 
     //hide and show card faces
     revealcard(card) {
-         card.revealed = true;
-         return card;
+        card.revealed = true;
+        return card;
     },
     unrevealCard(card) {
-        card.revealed =  false;
+        card.revealed = false;
         return card;
     },
 
@@ -116,9 +117,19 @@ solitaire = {
     isCardAce(card) {
         return (card.name === this.config.cardConstants.ace);
     },
+    
     // check if card deck,placeholders etc are empty
     isEmpty(array) {
         return (array.length === 0);
-    }
+    },
 
+    //array roataion for deck
+    getNewCardFromClosedDeck: function () {
+        let lastCard = this.closedCardDeck[this.closedCardDeck.length - 1];
+        for (let index = this.closedCardDeck.length - 1 ; index > 0; index--) {
+            this.closedCardDeck[index] = this.closedCardDeck[index - 1];
+        }
+        this.closedCardDeck[0] = lastCard;
+        return this.closedCardDeck[this.closedCardDeck.length - 1];
+    },
 }
