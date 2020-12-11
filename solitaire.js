@@ -63,12 +63,12 @@ solitaire = {
     },
 
     //card data structure
-    getCard(type, id) {
+    getCard: function(type, id) {
         return { type: type, color: this.getCardTypeColor(type), id: (id % 13) + 1, name: this.getCardName((id % 13) + 1), revealed: false }
     },
 
     //get card color based on type
-    getCardTypeColor(cardType) {
+    getCardTypeColor: function(cardType) {
         if (cardType === this.config.cardTypes[0] || cardType === this.config.cardTypes[1]) {
             return this.config.cardColors[0];
         } else {
@@ -77,7 +77,7 @@ solitaire = {
     },
 
     //get card names for cards like Ace, Jack, Queen
-    getCardName(id) {
+    getCardName: function(id) {
         switch (id) {
             case 1: return this.config.cardConstants.ace;
             case 11: return this.config.cardConstants.jack;
@@ -88,7 +88,7 @@ solitaire = {
     },
 
     //shuffle cards in the deck
-    shuffleDeck(deck) {
+    shuffleDeck: function(deck) {
         let tempCard, currentIndex = deck.length;
         while (currentIndex !== 0) {
             let randomIndex = Math.floor(Math.random() * currentIndex);
@@ -102,27 +102,31 @@ solitaire = {
     },
 
     //hide and show card faces
-    revealcard(card) {
+    revealcard: function(card) {
         card.revealed = true;
         return card;
     },
-    unrevealCard(card) {
+    unrevealCard: function(card) {
         card.revealed = false;
         return card;
     },
 
-    isCardKing(card) {
+    isCardKing: function(card) {
         return (card.name === this.config.cardConstants.king);
     },
-    isCardAce(card) {
+    isCardAce: function(card) {
         return (card.name === this.config.cardConstants.ace);
     },
-    
+
     // check if card deck,placeholders etc are empty
-    isEmpty(array) {
+    isEmpty: function(array) {
         return (array.length === 0);
     },
 
+    isCardLower: function(parentCard, childCard) {
+        return (parentCard.id === childCard.id + 1);
+    },
+    
     //array roataion for deck
     getNewCardFromClosedDeck: function () {
         let lastCard = this.closedCardDeck[this.closedCardDeck.length - 1];
