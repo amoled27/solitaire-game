@@ -27,6 +27,7 @@ solitaire = {
     gameInitialization: function () {
         this.initializeCardDeck();
         this.initializeClosedDeck();
+        this.initializeSuitPlaceholders();
         this.getNewCardFromClosedDeck();
     },
 
@@ -111,7 +112,7 @@ solitaire = {
     },
 
     //if selectecard exists then click will attempt drop
-    onCardClick: function (card) {
+    onCardClick: function (card, cardIdex) {
         if (card.id === this.selectedCard.card.id) {
             this.unSelectCard();
             return;
@@ -120,7 +121,7 @@ solitaire = {
             return;
         }
         if (Object.keys(this.selectedCard.card).length === 0) {
-            this.selectCard(card);
+            this.selectCard(card, cardIdex);
         } else {
             this.dropCardOnOpenPlaceholder(card);
         }
@@ -131,17 +132,30 @@ solitaire = {
         if (card && (this.isCardLower(card, this.selectedCard.card) && this.isColorOpposite(card, this.selectedCard.card))) {
             let dropPlaceholderIndex = card.placeholderIndex;
             let dropPlaceholder = this.openPlaceholders[dropPlaceholderIndex];
-            let movingStack = [this.selectedCard.card];
+            let movingcard = this.selectedCard.card;
+            movingcard.placeholderIndex = card.placeholderIndex;
+            let movingStack = [movingcard];
 
-            let selectCardPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
+            let selectCardPlaceholder = this.selectedCard.card.placeholderIndex? this.openPlaceholders[this.selectedCard.card.placeholderIndex] : [];
             let selectedCardIndex = this.selectedCard.cardIndex;
-            if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined ||
-                selectCardPlaceholder.length - 1 !== selectedCardIndex) {
+            if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined) {
                 movingStack = selectCardPlaceholder.splice(selectedCardIndex, (selectCardPlaceholder.length - selectedCardIndex));
                 console.log('operation in')
+                movingStack = this.updatePlaceholderIndices(movingStack, card.placeholderIndex);
+                console.log(movingStack, 'updated');
+            } else {
+                //coming from the deck 
+                
             }
+
             dropPlaceholder.splice(dropPlaceholder.length, 0, ...movingStack);
         }
+    },
+
+    updatePlaceholderIndices(array, newIndex) {
+        return array.map(card => {
+            card.placeholderIndex = newIndex
+        })
     },
 
     onEmptyOpenPlaceholderClick(index) {
@@ -151,15 +165,15 @@ solitaire = {
     },
 
     onEmptySuitPlaceholderClick(index) {
-        if (this.isCardAce(this.selectedCard.card) && this.matchSuitDeck(this.suitPlaceholders[index],this.selectedCard.card)){
-            this.suitPlaceholders.push(this.selectedCard.card);
+        if (this.isCardAce(this.selectedCard.card) && this.matchSuitDeck(this.suitPlaceholders[index], this.selectedCard.card)) {
+            this.suitPlaceholders[index].cards.push(this.selectedCard.card);
         }
     },
 
     //suit placeholder drop
     dropCardOnSuitPlaceholder(baseCard) {
         if (baseCard && this.matchSuitType(baseCard, this.selectedCard.card) && this.isCardHigher(baseCard, this.selectedCard.card)) {
-            for(let index = 0; index < this.suitPlaceholders.length; index++) {
+            for (let index = 0; index < this.suitPlaceholders.length; index++) {
                 if (this.suitPlaceholders[index].type === this.selectedCard.card.type) {
                     this.suitPlaceholders[index].cards.push(this.selectedCard.card);
                 }
@@ -233,9 +247,10 @@ solitaire = {
     initializeSuitPlaceholders: function () {
         for (let index = 0; index < this.config.suitPlaceholders; index++) {
             let suitPlaceholder = {
-                type: this.config.cardType[index],
+                type: this.config.cardTypes[index],
                 cards: []
             }
+            this.suitPlaceholders.push(suitPlaceholder);
         }
     },
 
