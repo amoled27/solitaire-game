@@ -117,7 +117,7 @@ solitaire = {
             this.unSelectCard();
             return;
         }
-        if  (!card.revealed) {
+        if (!card.revealed) {
             return;
         }
         if (Object.keys(this.selectedCard.card).length === 0) {
@@ -152,7 +152,7 @@ solitaire = {
             }
 
             this.addcardsToOpenPlaceholder(dropPlaceholder, movingStack);
-        } 
+        }
     },
 
     addcardsToOpenPlaceholder(dropPlaceholder, cardStack) {
@@ -189,16 +189,24 @@ solitaire = {
     onEmptySuitPlaceholderClick(index) {
         if (this.isCardAce(this.selectedCard.card) && this.matchSuitDeck(this.suitPlaceholders[index], this.selectedCard.card)) {
             this.suitPlaceholders[index].cards.push(this.selectedCard.card);
+           
+            this.selectedCard.card.placeholderIndex? this.openPlaceholders[this.selectedCard.card.placeholderIndex].pop() : this.closedCardDeck.pop();
         }
-        //remove card logic
     },
 
     //suit placeholder drop
     dropCardOnSuitPlaceholder(baseCard) {
+        //not empty placeholder
         if (baseCard && this.matchSuitType(baseCard, this.selectedCard.card) && this.isCardHigher(baseCard, this.selectedCard.card)) {
             for (let index = 0; index < this.suitPlaceholders.length; index++) {
                 if (this.suitPlaceholders[index].type === this.selectedCard.card.type) {
                     this.suitPlaceholders[index].cards.push(this.selectedCard.card);
+                    if (this.selectedCard.card.placeholderIndex) { 
+                        this.openPlaceholders[this.selectedCard.card.placeholderIndex].pop();
+                    } else {
+                        this.closedCardDeck.pop();
+                    }
+                    break;
                 }
             }
         }
