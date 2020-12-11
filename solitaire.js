@@ -117,7 +117,7 @@ solitaire = {
             this.unSelectCard();
             return;
         }
-        if (!card.revealed) {
+        if  (!card.revealed) {
             return;
         }
         if (Object.keys(this.selectedCard.card).length === 0) {
@@ -129,27 +129,34 @@ solitaire = {
 
     //open placeholder drop execution
     dropCardOnOpenPlaceholder(card) {
+
+        //drop placeholder has cards
         if (card && (this.isCardLower(card, this.selectedCard.card) && this.isColorOpposite(card, this.selectedCard.card))) {
             let dropPlaceholderIndex = card.placeholderIndex;
             let dropPlaceholder = this.openPlaceholders[dropPlaceholderIndex];
-            let movingcard = this.selectedCard.card;
-            movingcard.placeholderIndex = card.placeholderIndex;
-            let movingStack = [movingcard];
+            let movingStack;
 
-            let selectCardPlaceholder = this.selectedCard.card.placeholderIndex? this.openPlaceholders[this.selectedCard.card.placeholderIndex] : [];
-            let selectedCardIndex = this.selectedCard.cardIndex;
+            //has original placeholder
             if (this.selectedCard.card.placeholderIndex !== null || this.selectedCard.card.placeholderIndex !== undefined) {
-                movingStack = selectCardPlaceholder.splice(selectedCardIndex, (selectCardPlaceholder.length - selectedCardIndex));
-                console.log('operation in')
+                let selectCardPlaceholder = this.selectedCard.card.placeholderIndex ? this.openPlaceholders[this.selectedCard.card.placeholderIndex] : [];
+                let selectedCardIndex = this.selectedCard.cardIndex;
+                movingStack = removeFromOriginalOpenPlaceholder(selectCardPlaceholder, selectedCardIndex);
                 movingStack = this.updatePlaceholderIndices(movingStack, card.placeholderIndex);
                 console.log(movingStack, 'updated');
             } else {
                 //coming from the deck 
-                this.closedCardDeck = this.closedCardDeck.slice(this.closedCardDeck.length - 1);
+                let movingcard = this.selectedCard.card;
+                movingcard.placeholderIndex = card.placeholderIndex;
+                movingStack = [movingcard];
+                this.removeFromOpenDeck();
             }
 
-            dropPlaceholder.splice(dropPlaceholder.length, 0, ...movingStack);
-        }
+            this.addcardsToOpenPlaceholder(dropPlaceholder, movingStack);
+        } 
+    },
+
+    addcardsToOpenPlaceholder(dropPlaceholder, cardStack) {
+        return dropPlaceholder.splice(dropPlaceholder.length, 0, ...cardStack)
     },
 
     updatePlaceholderIndices(array, newIndex) {
@@ -160,14 +167,30 @@ solitaire = {
 
     onEmptyOpenPlaceholderClick(index) {
         if (this.isCardKing(this.selectedCard.card)) {
-            this.openPlaceholders[index].push(this.selectCard.card)
+            if (this.selectedCard.cardIndex) {
+                let originalPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
+                let movingArr = this.removeFromOriginalOpenPlaceholder(originalPlaceholder, this.selectedCard.cardIndex);
+                this.addcardsToOpenPlaceholder(this.openPlaceholders[index], movingArr);
+            } else {
+                this.openPlaceholders[index].push(this.selectedCard.card);
+                this.removeFromOpenDeck();
+            }
         }
+    },
+
+    removeFromOriginalOpenPlaceholder(originalPlaceholder, selectedCardIndex) {
+        return originalPlaceholder.splice(selectedCardIndex, (originalPlaceholder.length - selectedCardIndex));
+    },
+
+    removeFromOpenDeck() {
+        this.closedCardDeck = this.closedCardDeck.slice(this.closedCardDeck.length - 1);
     },
 
     onEmptySuitPlaceholderClick(index) {
         if (this.isCardAce(this.selectedCard.card) && this.matchSuitDeck(this.suitPlaceholders[index], this.selectedCard.card)) {
             this.suitPlaceholders[index].cards.push(this.selectedCard.card);
         }
+        //remove card logic
     },
 
     //suit placeholder drop
