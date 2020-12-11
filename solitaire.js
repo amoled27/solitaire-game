@@ -1,7 +1,7 @@
 solitaire = {
     config: {
         openPlaceholdersLimit: 7,
-        suitPlaceholders: 7,
+        suitPlaceholders: 4,
         cardTypes: ['spade', 'clubs', 'hearts', 'diamond'],
         cardsLimit: 52,
         cardColors: ['black', 'red'],
@@ -29,6 +29,7 @@ solitaire = {
         this.initializeClosedDeck();
         this.getNewCardFromClosedDeck();
     },
+
     //initialize 52 cards with their data and save in an array
     initializeCardDeck: function () {
         let cardTypeCount = 0;
@@ -66,8 +67,7 @@ solitaire = {
         this.closedCardDeck.splice(0, usedCardsCount);
     },
 
-    //card data structure
-    //placeholder index  0-6 , 
+    //card data structure | placeholder index  0-6 , 
     getCard: function (type, value) {
         return { type: type, color: this.getCardTypeColor(type), value: (value % 13) + 1, name: this.getCardName((value % 13) + 1), revealed: false, id: this.generateId(type, value), placeholderIndex: null }
     },
@@ -75,6 +75,7 @@ solitaire = {
     generateId: function (type, value) {
         return type[0] + value;
     },
+
     //get card color based on type
     getCardTypeColor: function (cardType) {
         if (cardType === this.config.cardTypes[0] || cardType === this.config.cardTypes[1]) {
@@ -127,14 +128,10 @@ solitaire = {
 
     //open placeholder drop execution
     dropCardOnOpenPlaceholder(card) {
-        if (this.isCardLower(card, this.selectedCard.card) && this.isColorOpposite(card, this.selectedCard.card)) {
+        if (card && (this.isCardLower(card, this.selectedCard.card) && this.isColorOpposite(card, this.selectedCard.card))) {
             let dropPlaceholderIndex = card.placeholderIndex;
             let dropPlaceholder = this.openPlaceholders[dropPlaceholderIndex];
-            let movingStack = [card];
-
-            if (dropPlaceholder.length === 0 && this.isCardKing(card)) {
-                return;
-            }
+            let movingStack = [this.selectedCard.card];
 
             let selectCardPlaceholder = this.openPlaceholders[this.selectedCard.card.placeholderIndex];
             let selectedCardIndex = this.selectedCard.cardIndex;
@@ -143,14 +140,31 @@ solitaire = {
                 movingStack = selectCardPlaceholder.splice(selectedCardIndex, (selectCardPlaceholder.length - selectedCardIndex));
                 console.log('operation in')
             }
-
             dropPlaceholder.splice(dropPlaceholder.length, 0, ...movingStack);
-
         }
     },
 
-    checkCardMatchSuit() {
+    onEmptyOpenPlaceholderClick(index) {
+        if (this.isCardKing(this.selectedCard.card)) {
+            this.openPlaceholders[index].push(this.selectCard.card)
+        }
+    },
 
+    onEmptySuitPlaceholderClick(index) {
+        if (this.isCardAce(this.selectedCard.card) && this.matchSuitDeck(this.suitPlaceholders[index],this.selectedCard.card)){
+            this.suitPlaceholders.push(this.selectedCard.card);
+        }
+    },
+
+    //suit placeholder drop
+    dropCardOnSuitPlaceholder(baseCard) {
+        if (baseCard && this.matchSuitType(baseCard, this.selectedCard.card) && this.isCardHigher(baseCard, this.selectedCard.card)) {
+            for(let index = 0; index < this.suitPlaceholders.length; index++) {
+                if (this.suitPlaceholders[index].type === this.selectedCard.card.type) {
+                    this.suitPlaceholders[index].cards.push(this.selectedCard.card);
+                }
+            }
+        }
     },
 
     //hide and show card faces
@@ -170,6 +184,13 @@ solitaire = {
         return (card.name === this.config.cardConstants.ace);
     },
 
+    matchSuitDeck: function (suitPlaceholder, card) {
+        return (suitPlaceholder.type === card.type)
+    },
+
+    matchSuitType: function (baseCard, childCard) {
+        return (baseCard.type === childCard.type);
+    },
     // check if card deck,placeholders etc are empty
     isEmpty: function (array) {
         return (array.length === 0);
@@ -179,9 +200,14 @@ solitaire = {
         return (parentCard.value === childCard.value + 1);
     },
 
+    isCardHigher: function (parentCard, childCard) {
+        return (parentCard.value + 1 === childCard.value);
+    },
+
     isColorOpposite: function (parentCard, childCard) {
         return (parentCard.color !== childCard.color);
     },
+
 
 
     //select unselect a card
@@ -192,6 +218,7 @@ solitaire = {
     unSelectCard: function () {
         this.selectedCard = {};
     },
+
     //array roataion for deck
     getNewCardFromClosedDeck: function () {
         let lastCard = this.closedCardDeck[this.closedCardDeck.length - 1];
@@ -201,15 +228,27 @@ solitaire = {
         this.closedCardDeck[0] = lastCard;
         return this.closedCardDeck[this.closedCardDeck.length - 1];
     },
-    resetGame: function() {
+
+    //set suit placeholder types
+    initializeSuitPlaceholders: function () {
+        for (let index = 0; index < this.config.suitPlaceholders; index++) {
+            let suitPlaceholder = {
+                type: this.config.cardType[index],
+                cards: []
+            }
+        }
+    },
+
+    //reset game parameters
+    resetGame: function () {
         this.selectedCard = {
             card: {},
             cardIndex: null
         };
         openPlaceholders = [];
-        suitPlaceholders= [];
-        cardDeck= [];
-        closedCardDeck= [];
+        suitPlaceholders = [];
+        cardDeck = [];
+        closedCardDeck = [];
     }
 
 }
