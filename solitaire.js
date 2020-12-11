@@ -63,10 +63,13 @@ solitaire = {
     },
 
     //card data structure
-    getCard: function(type, id) {
-        return { type: type, color: this.getCardTypeColor(type), id: (id % 13) + 1, name: this.getCardName((id % 13) + 1), revealed: false }
+    getCard: function(type, value) {
+        return { type: type, color: this.getCardTypeColor(type), value: (value % 13) + 1, name: this.getCardName((value % 13) + 1), revealed: false, id: this.generateId(type, value)}
     },
 
+    generateId: function(type, value) {
+        return type[0] + value;
+    },
     //get card color based on type
     getCardTypeColor: function(cardType) {
         if (cardType === this.config.cardTypes[0] || cardType === this.config.cardTypes[1]) {
@@ -101,6 +104,12 @@ solitaire = {
         return deck;
     },
 
+    checkCardMatchForOpenPlaceHolder() {
+
+    },
+    checkCardMatchSuit() {
+
+    },
     //hide and show card faces
     revealcard: function(card) {
         card.revealed = true;
@@ -130,6 +139,20 @@ solitaire = {
     isColorOpposite: function (parentCard, childCard) {
         return (parentCard.color !== childCard.color);
     },
+    //if selectecard exists then click will attempt drop
+
+    onCardClick:  function () {
+
+    },
+
+    //select unselect a card
+    selectCard: function (card) {
+        this.selectCard = card;
+    },
+
+    unSelectCard: function () {
+        this.selectCard = {};
+    },
     //array roataion for deck
     getNewCardFromClosedDeck: function () {
         let lastCard = this.closedCardDeck[this.closedCardDeck.length - 1];
@@ -139,4 +162,5 @@ solitaire = {
         this.closedCardDeck[0] = lastCard;
         return this.closedCardDeck[this.closedCardDeck.length - 1];
     },
+
 }
