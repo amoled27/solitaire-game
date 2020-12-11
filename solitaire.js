@@ -126,7 +126,10 @@ solitaire = {
     isCardLower: function(parentCard, childCard) {
         return (parentCard.id === childCard.id + 1);
     },
-    
+
+    isColorOpposite: function (parentCard, childCard) {
+        return (parentCard.color !== childCard.color);
+    },
     //array roataion for deck
     getNewCardFromClosedDeck: function () {
         let lastCard = this.closedCardDeck[this.closedCardDeck.length - 1];
