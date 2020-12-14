@@ -1,3 +1,4 @@
+
 solitaire = {
     config: {
         openPlaceholdersLimit: 7,
@@ -29,8 +30,13 @@ solitaire = {
         this.initializeClosedDeck();
         this.initializeSuitPlaceholders();
         this.getNewCardFromClosedDeck();
-    },
+        this.renderOpenDeck();
+        },
 
+    renderOpenDeck: function () {
+        console.log(generateView)
+        generateView.renderOpenDeck(this.closedCardDeck[this.closedCardDeck.length - 1]);
+    },
     //initialize 52 cards with their data and save in an array
     initializeCardDeck: function () {
         let cardTypeCount = 0;
@@ -47,6 +53,10 @@ solitaire = {
     //set open placeholders and inser cards 1 , 2, .... 
     initializeOpenPlaceholders: function () {
         let cardsCount = 0;
+        for (let i = 0 ; i < this.config.openPlaceholdersLimit; i++) {
+            console.log('t', i)
+            generateView.renderOpenPlaceholders(i+1);
+        }
         for (let cardsLimit = 1; cardsLimit <= this.config.openPlaceholdersLimit; cardsLimit++) {
             let placeholder = [];
             for (let i = 0; i < cardsLimit; i++) {
@@ -55,6 +65,7 @@ solitaire = {
                 }
                 this.cardDeck[cardsCount].placeholderIndex = cardsLimit - 1;
                 placeholder.push(this.cardDeck[cardsCount]);
+                generateView.addOpenCard(this.cardDeck[cardsCount], i===0 , i > 0? this.cardDeck[cardsCount - 1].id: null);
                 cardsCount++;
             }
             this.openPlaceholders.push(placeholder);
@@ -113,14 +124,15 @@ solitaire = {
 
     //if selectecard exists then click will attempt drop
     onCardClick: function (card, cardIdex) {
-        if (card.id === this.selectedCard.card.id) {
+        console.log(this.selectedCard)
+        if (this.selectedCard.card && card.id === this.selectedCard.card.id) {
             this.unSelectCard();
             return;
         }
         if (!card.revealed) {
             return;
         }
-        if (Object.keys(this.selectedCard.card).length === 0) {
+        if (this.selectedCard.card && Object.keys(this.selectedCard.card).length === 0) {
             this.selectCard(card, cardIdex);
         } else {
             this.dropCardOnOpenPlaceholder(card);
@@ -253,11 +265,15 @@ solitaire = {
         return (parentCard.color !== childCard.color);
     },
 
-
-
+    findCard: function (id) {
+        let cardIndex = this.cardDeck.findIndex(card => card.id = id);
+        console.log(cardIndex, '1')
+        this.onCardClick(this.cardDeck[cardIndex], cardIndex);
+    },
     //select unselect a card
     selectCard: function (card, cardIndex) {
         this.selectedCard = { card: card, cardIndex: cardIndex };
+        generateView.selectOpenDeckCard(card)
     },
 
     unSelectCard: function () {
@@ -281,6 +297,7 @@ solitaire = {
                 type: this.config.cardTypes[index],
                 cards: []
             }
+            generateView.setSuitPlaceholder(suitPlaceholder);
             this.suitPlaceholders.push(suitPlaceholder);
         }
     },
@@ -298,3 +315,5 @@ solitaire = {
     }
 
 }
+
+solitaire.gameInitialization();
