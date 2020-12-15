@@ -22,14 +22,12 @@ define(function (require) {
             return element;
         },
         onPlaceholderClick: function (event) {
-            console.log('hi', event)
         },
         displayCards: function (placeholderElement, cards) {
             cards.forEach(card => {
                 let cardElement = cardUI.init(card);
                 placeholderElement.appendChild(cardElement);
             });
-            console.log(placeholderElement,'pl');
             return placeholderElement;
         }
     }

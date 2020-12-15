@@ -17,11 +17,11 @@ define(function (require) {
         DOMMap: {},
         DOMMapKeys: { deck: 'deck', placeholder: 'placeholder', stack: 'stack', shuffleBtn: 'shuffleBtn' },
         suit: ['heart', 'clubs', 'diamond', 'spade'],
-        deck: [],
+        deck: {},
         stack: [],
         removeBtn: {},
         selectedCard: {},
-        openDeck: [],
+        openDeck: {},
         selectedCard: null,
         initClosePlaceholders: function () {
             for (let i = 0; i < 4; i++) {
@@ -33,7 +33,7 @@ define(function (require) {
             for (let i = 0; i < 7; i++) {
                 count++;
                 let [DOMMapKey, placeholderElement] = this.initPlaceholder('open', '', i);
-                let placeholderCards = this.popCardsFromDeck(this.deck, count);
+                let placeholderCards = this.popCardsFromDeck(this.deck.cards, count);
                 this.DOMMap[DOMMapKey] = PlaceholderUI.displayCards(placeholderElement, placeholderCards);
             }
         },
@@ -50,15 +50,18 @@ define(function (require) {
             this.DOMMap['placeholder_' + identfier] = PlaceholderUI.init(placeholder);
         },
         initDeck: function () {
-            this.deck = new Deck.init();
-            this.DOMMap['deck'] = DeckUI.init(this.deck);
-            this.displayOpenDeck();
+            this.deck = new Deck.init(this.openDeck);
+            this.DOMMap['deck'] = DeckUI.init(this.deck.cards);
         },
-        displayOpenDeck: function (card) {
-            let poppedCard = this.popCardsFromDeck(this.deck, 1);
-            this.openDeck.push(...poppedCard);
-            console.log(poppedCard, 'pp');
-            this.DOMMap['open-deck'] = DeckUI.init(this.openDeck);
+        displayOpenDeck: function () {
+            this.openDeck = new Deck.initOpenDeck(this.deck);
+            this.pushToOpenDeck();
+        },
+        pushToOpenDeck: function() {
+            let poppedCard = this.popCardsFromDeck(this.deck.cards, 1);
+            this.openDeck.deck.push(...poppedCard);
+            console.log(this.openDeck)
+            this.DOMMap['open-deck'] = DeckUI.init(this.openDeck.deck);
         },
         initCard: function () {
             let card = new Card('spade', 'A');
@@ -92,8 +95,8 @@ define(function (require) {
         },
         popCardsFromDeck: function (deck, count) {
             let poppedCards;
-            [this.deck, poppedCards] = Deck.popCards(deck, count);
-            this.DOMMap['deck'] = DeckUI.init(this.deck);
+            [this.deck.cards, poppedCards] = Deck.popCards(deck, count);
+            this.DOMMap['deck'] = DeckUI.init(this.deck.cards);
             return poppedCards;
         },
         removeCard: function (index) {
@@ -130,9 +133,8 @@ define(function (require) {
             return document.getElementById('removeCardBtn');
         },
         shuffleDeck: function () {
-            let shuffledDeck = Deck.shuffle(this.deck);
-            this.deck = shuffledDeck;
-            console.log(this.deck, 'this')
+            let shuffledDeck = Deck.shuffle(this.deck.cards);
+            this.deck.cards = shuffledDeck;
             if (document.getElementsByClassName('deck')[0]) {
                 document.getElementsByClassName('deck')[0].remove();
             }
@@ -164,15 +166,17 @@ define(function (require) {
                 }
             });
         },
-        reRenderDomElement: function (elementKey) {
+        reRenderDomElement: function () {
             document.getElementById('root').innerHTML = '';
             this.renderDomElements();
-        }
+        },
+
     }
 
     Game.initDeck();
     Game.renderDomElements();
     Game.shuffleDeck();
+    Game.displayOpenDeck();
     Game.initOpenPlaceholders();
     Game.reRenderDomElement();
 
