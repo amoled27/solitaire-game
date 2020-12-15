@@ -13,49 +13,85 @@ define(function (require) {
 
     const Stack = require('./components/stack.js');
     const StackUI = require('./views/stack.js');
-    
     Game = {
+        DOMMap: {},
+        DOMMapKeys: { deck: 'deck', placeholder: 'placeholder', stack: 'stack', shuffleBtn: 'shuffleBtn' },
+        suit: ['heart', 'clubs', 'diamond', 'spade'],
         deck: [],
         stack: [],
         removeBtn: {},
         selectedCard: null,
-        init: function () {
-            let placeholder = new Placeholder.init([], 'suit', 'spade');
-            console.log(PlaceholderUI.init(placeholder));
-            return PlaceholderUI.init(placeholder);
+        initClosePlaceholders: function () {
+            for (let i = 0; i < 4; i++) {
+                let placeholder = this.initPlaceholder('suit', this.suit[i]);
+            }
+        },
+        initOpenPlaceholders: function () {
+            for (let i = 0; i < 7; i++)
+                this.initPlaceholder('open', '', i);
+        },
+        initPlaceholder: function (type, suit, index) {
+            let placeholder = new Placeholder.init([], type, suit);
+            this.DOMMap['placeholder_' + (suit ? suit : index)] = PlaceholderUI.init(placeholder);
+        },
+        addCardsToPlaceholder: function (placeholder, cards) {
+            placeholder.pushCards(cards);
+            this.DOMMap['placeholder_' + placeholder.suit] = PlaceholderUI.init(placeholder);
         },
         initDeck: function () {
             let deck = new Deck.init();
             this.deck = deck;
-            return DeckUI.init(deck);
+            this.DOMMap['deck'] = DeckUI.init(deck);
         },
         initCard: function () {
             let card = new Card('spade', 'A');
             let cardElement = CardUI.init(card)
             return cardElement;
         },
-        initStack: function () {
-            this.stack = new Stack.init();
+        initStack: function (index) {
+           this.createStack(index);
+        },
+        createStack: function (index) {
+            let stack =  new Stack.init();
             let cardOne = new Card('spade', 'A');
             let cardTwo = new Card('spade', 'K');
-            this.stack.pushCard(cardOne);
-            this.stack.pushCard(cardTwo);
-            return StackUI.init(this.stack.cards);
+            let cardThree = new Card('diamond', 'K');
+            let cardArr = [cardOne, cardTwo, cardThree];
+            stack.pushCardStack(cardArr);
+            console.log('init stack', stack);
+            this.DOMMap['stack' + index] = StackUI.init(stack.cards);
+        },
+        openCard: function () {
+
+        },
+        closeCard: function () {
+
+        },
+        pushCardsToStack: function (stack, cardArr) {
+            this.stack.pushCardStack(cardArr);
+            this.DOMMap['stack'] = StackUI.init(this.stack.cards);
         },
         reRenderStack: function () {
-            console.log('in rerendr stack', this.stack.cards);
             return StackUI.init(this.stack.cards);
         },
+        pushCardToDeck: function (deck) {
+            this.DOMMap['deck'] = DeckUI.init(Deck.pushCard(deck, card));
+        },
+        popCardFromDeck: function () {
+            this.DOMMap['deck'] = DeckUI.init(Deck.popCard(deck));
+        },
         removeCard: function () {
-            let cardOne = new Card('spade', 'A');
-            this.stack.removeCard(cardOne);
+            let cardTwo = new Card('spade', 'K');
+            let cardThree = new Card('diamond', 'K');
+            let cardArr = [cardTwo, cardThree];
+            this.stack.removeCard(cardTwo);
+            this.DOMMap['stack'] = StackUI.init(this.stack.cards);
         },
         createShuffleBtn: function () {
-            return this.createBtn('Shuffle', { 'id': 'shuffleBtn' });
+            this.DOMMap['shuffleBtn'] = this.createBtn('Shuffle', { 'id': 'shuffleBtn' });
         },
         createRemoveCardBtn: function () {
-            this.removeBtn = this.createBtn('Remove Card', { 'id': 'removeCardBtn' });
-            return this.removeBtn;
+            this.DOMMap['removeCardBtn'] = this.createBtn('Remove Card', { 'id': 'removeCardBtn' });
         },
         createBtn: function (name, properties) {
             let btn = document.createElement('button');
@@ -80,7 +116,8 @@ define(function (require) {
         shuffleDeck: function () {
             let shuffledDeck = Deck.shuffle(this.deck);
             document.getElementsByClassName('deck')[0].remove();
-            return DeckUI.init(shuffledDeck);
+            this.DOMMap[this.DOMMapKeys.deck] = DeckUI.init(shuffledDeck);
+            this.reRenderDomElement(this.DOMMapKeys.deck);
         },
         getDeck: function () {
             return document.getElementById('deck');
@@ -97,21 +134,34 @@ define(function (require) {
         },
         pushToStack(secondaryStack) {
             return secondaryStack.pop();
+        },
+        renderDomElements: function () {
+            Object.keys(this.DOMMap).forEach(domElementKey => {
+                let domElement = this.DOMMap[domElementKey];
+                if (domElement) {
+                    this.appendToDocument(document.getElementById('root'), domElement);
+                }
+            });
+        },
+        reRenderDomElement: function (elementKey) {
+            document.getElementById('root').innerHTML = '';
+            this.renderDomElements();
         }
     }
-    console.log(document.getElementById('root'))
-    Game.appendToDocument(document.getElementById('root'), Game.createShuffleBtn());
-    Game.appendToDocument(document.getElementById('root'), Game.createRemoveCardBtn());
-    Game.appendToDocument(document.getElementById('root'), Game.init());
-    Game.appendToDocument(document.getElementById('root'), Game.initStack());
-    Game.appendToDocument(document.getElementById('root'), Game.initDeck());
+    Game.createShuffleBtn();
+    Game.createRemoveCardBtn();
+    Game.initDeck();
+    // Game.initStack();
+    // Game.initOpenPlaceholders();
+    Game.initPlaceholder();
+    // Game.initClosePlaceholders();
+    Game.renderDomElements();
 
     Game.getShuffleBtn().onclick = function () {
-        Game.appendToDocument(document.getElementById('root'), Game.shuffleDeck());
+        Game.shuffleDeck();
     };
-    Game.removeBtn.onclick = function () {
+    Game.DOMMap['removeCardBtn'].onclick = function () {
         Game.removeCard();
-        document.getElementById('stack').remove();
-        Game.appendToDocument(document.getElementById('root'), Game.reRenderStack());
+        Game.reRenderDomElement();
     };
 });

@@ -6,6 +6,7 @@ define(function (require) {
         createPlaceholder: function (type, suit) {
             let placeholder = document.createElement('div');
             placeholder = this.setProperties(placeholder, suit, { 'class': 'placeholder' + ' ' + type});
+            placeholder.onclick = this.onPlaceholderClick;
             return placeholder;
         },
         setProperties: function (element, text, properties) {
@@ -18,6 +19,10 @@ define(function (require) {
                 });
             }
             return element;
+        },
+        onPlaceholderClick: function (event) {
+            console.log('hi', event.target)
+
         }
     }
     return PlaceholderUI;

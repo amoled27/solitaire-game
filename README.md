@@ -53,6 +53,10 @@ Properties:
             @params {Card} Card object
             @params {Card} Card object
 
+Subscribers:
+    checkIsCardOpen : to check if card is open or close
+    checkCardSelected: to check if card is selected
+
 
 
 

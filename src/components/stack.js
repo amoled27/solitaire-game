@@ -2,7 +2,7 @@ define(function (require) {
     Stack = {}
     Stack.cards = [];
     Stack.init = function () {
-        return Stack;
+        return  Object.assign({}, Stack);
     };
     Stack.pushCard = function (card) {
         this.cards.push(card);
@@ -19,6 +19,15 @@ define(function (require) {
             return true;
         }
         return false;
+    }
+    Stack.pushCardStack = function (stack) {
+        this.cards = [...this.cards, ...stack];
+        return this.cards;
+    },
+    Stack.removeCardStack =  function (stack) {
+        let stackFirstCard = stack[0];
+        let cardIndex = this.cards.map(card => card.rank + card.suit).indexOf(stackFirstCard.rank + stackFirstCard.suit);
+        this.cards.splice(cardIndex, stack.length);
     }
     return Stack;
 });
