@@ -20,6 +20,7 @@ define(function (require) {
         }
         return false;
     }
+    //deprecated
     Stack.pushCardStack = function (stack) {
         this.cards = [...this.cards, ...stack];
         return this.cards;

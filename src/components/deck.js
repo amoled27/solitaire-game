@@ -1,7 +1,6 @@
 define(function(require) {
     const Suit = require('./suitDeck.js');
     Deck = {};
-    Deck.deckCards = [];
     Deck.init = function (openDeck) {
         let suits = 'spade diamond clubs heart'.split(' ');
         let deck = [];
@@ -10,12 +9,7 @@ define(function(require) {
             let suitDeck = new Suit.init(suit);
             deck = [...deck, ...suitDeck];
         }
-        Deck.deckCards = deck;
-        return { cards: deck, openDeck: openDeck };
-    };
-    Deck.initOpenDeck = function (deckRef) {
-        Deck.deckCards = [];
-        return { closedDeck: deckRef, deck: [] };
+        return deck;
     };
     Deck.shuffle = function (deck) {
         let i = deck.length - 1;
@@ -37,6 +31,10 @@ define(function(require) {
         deck[0] = lastEl;
         return deck;
     };
+    Deck.popCard = function () {
+        //  return 
+    };
+    //deprecated
     Deck.popCards = function (deck, count) {
         let poppedCards = deck.splice((deck.length - count), count);
         return [deck, poppedCards];
