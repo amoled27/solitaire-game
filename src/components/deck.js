@@ -22,6 +22,18 @@ define(function (require) {
                 i--;
             }
             return deck;
+        },
+        rotateCards: function (deck) {
+            let lastEl = deck[deck.length -1];
+            for (let i = deck.length -1; i> 0; i++) {
+                deck[i] = deck[i - 1] 
+            }
+            deck[0] = lastEl;
+            return deck;
+        },
+        popCards: function(deck, count) {
+            let poppedCards = deck.splice( (deck.length - count),count);
+            return [deck, poppedCards];
         }
     }
     return Deck;

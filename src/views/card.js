@@ -26,6 +26,7 @@ define(function (require) {
             return `../../images/${suit.toLowerCase()}.svg`;
         },
         onCardClick: function (event) {
+            console.log(event, '1')
             if (event.target.nodeName === 'DIV') {
                 event.target.classList.toggle('selectedCard');
             } else {
