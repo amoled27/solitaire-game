@@ -19,6 +19,8 @@ Description:
 Properties:
     openCard: function to open the card
     closeCard: function to close the card
+    pushCard: function to push a card or a stack of cards
+    popCard: function to remoce a card or a stack of cards
 
 SuitDeck:
 Description: 
@@ -31,6 +33,13 @@ Description:
 ClosedStack
 Description: 
     collection of closed cards
+
+Placeholder
+Description:
+    container that holds stack of cards 
+Properties: 
+    pushCard: function to push a card or a stack of cards
+    popCard: function to remoce a card or a stack of cards
 
 PlaceholderStack
 Description:

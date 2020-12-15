@@ -12,11 +12,15 @@ define(function () {
       *  
       **/
 
-    createDOMMap = function (array, createItemDOM) {
+    createDOMMap = function (array, createItemDOM, properties) {
         let arrayElement = document.createElement('div');
+        if (properties && Object.keys(properties).length) {
+            Object.keys(properties).forEach(propertyKey => {
+                arrayElement.setAttribute(propertyKey, properties[propertyKey]);
+            });
+        }
         for (let i = 0; i < array.length; i++) {
             let itemElement = createItemDOM(array[i]);
-            console.log(itemElement);
             arrayElement.appendChild(itemElement);
         }
         return arrayElement;

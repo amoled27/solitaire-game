@@ -13,4 +13,4 @@ define(function (require) {
         createDOMMap: domUtil.createDOMMap,
     }
     return suitDeckUI;
-})
+});
